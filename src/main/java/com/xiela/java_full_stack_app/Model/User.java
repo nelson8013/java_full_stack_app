@@ -13,22 +13,22 @@ import lombok.ToString;
 @ToString
 public class User {
  @Id private Long id;
- private String firstName;
- private String lastName;
+ private String first_name;
+ private String last_name;
  private String email;
  private String password;
 
- private static User of(String firstName, String lastName, String email, String password){
-  return new User(null, firstName, lastName, email, password);
+ public static User of(String first_name, String last_name, String email, String password){
+  return new User(null, first_name, last_name, email, password);
  }
 
  @PersistenceCreator
- private User(Long id, String firstName, String lastName, String email, String password){
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
+ private User(Long id, String first_name, String last_name, String email, String password){
+        this.id         = id;
+        this.first_name = first_name;
+        this.last_name  = last_name;
+        this.email      = email;
+        this.password   = password;
  }
  
 }

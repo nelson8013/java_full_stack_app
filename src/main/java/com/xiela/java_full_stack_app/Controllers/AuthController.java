@@ -1,7 +1,11 @@
 package com.xiela.java_full_stack_app.Controllers;
 
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.xiela.java_full_stack_app.Model.User;
@@ -30,11 +34,12 @@ public class AuthController {
 
  @PostMapping("/register")
  public ResponseRequest register(@RequestBody RegisterRequest registerRequest) {
-  var user = userRepository.save(
-     User.of( registerRequest.first_name(), registerRequest.last_name(), registerRequest.email(), registerRequest.password() )
-  );
+  if(!Objects.equals(registerRequest.password(), registerRequest.passwordConfirm())){
+     throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Passwords do not match");
+  }
 
-  return new ResponseRequest(user.getId(), user.getFirst_name(), user.getLast_name(), user.getEmail());
+    var user = userRepository.save(User.of( registerRequest.first_name(), registerRequest.last_name(), registerRequest.email(), registerRequest.password() ) );
+    return new ResponseRequest(user.getId(), user.getFirst_name(), user.getLast_name(), user.getEmail());
  }
 
 

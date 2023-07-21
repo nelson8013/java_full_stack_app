@@ -38,7 +38,14 @@ public class AuthController {
     return new RegisterResponse(user.getId(), user.getFirst_name(), user.getLast_name(), user.getEmail());
  }
 
+ record SignInRequest(String email,String password){}
+ record SignInResponse(Long id, String first_name, String last_name,String email){}
 
+ @PostMapping("/login")
+ public SignInResponse login(@RequestBody SignInRequest signInRequest){
+      var user =   authService.login( signInRequest.email(), signInRequest.password());
+      return new SignInResponse(user.getId(), user.getFirst_name(), user.getLast_name(),user.getEmail());
+ }
 
 
 

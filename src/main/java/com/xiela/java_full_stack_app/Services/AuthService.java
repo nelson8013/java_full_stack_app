@@ -27,4 +27,13 @@ public class AuthService {
         return userRepository.save( User.of(first_name, last_name,email, passwordEncoder.encode(password)) );
     }
 
+    public User login(String email, String password) {
+        var user = userRepository.findByEmail(email).orElseThrow( () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Credentials"));
+
+        if(!passwordEncoder.matches(password, user.getPassword())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Credentials!");
+        }
+        return user;
+    }
+
 }

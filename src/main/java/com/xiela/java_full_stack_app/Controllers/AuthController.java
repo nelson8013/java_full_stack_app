@@ -1,14 +1,10 @@
 package com.xiela.java_full_stack_app.Controllers;
 
-import java.util.Objects;
-
 import com.xiela.java_full_stack_app.Services.AuthService;
-import org.springframework.http.HttpStatus;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.xiela.java_full_stack_app.Model.User;
 
 @RestController
 @RequestMapping("/api")
@@ -39,12 +35,19 @@ public class AuthController {
  }
 
  record SignInRequest(String email,String password){}
- record SignInResponse(Long id, String first_name, String last_name,String email){}
+ record SignInResponse(String token){}
 
  @PostMapping("/login")
- public SignInResponse login(@RequestBody SignInRequest signInRequest){
-      var user =   authService.login( signInRequest.email(), signInRequest.password());
-      return new SignInResponse(user.getId(), user.getFirst_name(), user.getLast_name(),user.getEmail());
+ public SignInResponse login(@RequestBody SignInRequest signInRequest, HttpServletResponse response){
+      var login =   authService.login( signInRequest.email(), signInRequest.password());
+
+     Cookie cookie = new Cookie("refresh_token", login.getRefreshToken().getToken());
+     cookie.setMaxAge(3600);
+     cookie.setHttpOnly(true);
+     cookie.setPath("/api");
+
+     response.addCookie(cookie);
+      return new SignInResponse(login.getAccessToken().getToken());
  }
 
 

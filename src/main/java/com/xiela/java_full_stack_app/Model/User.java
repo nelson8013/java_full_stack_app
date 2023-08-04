@@ -1,8 +1,8 @@
 package com.xiela.java_full_stack_app.Model;
 
 import org.springframework.data.annotation.Id;
-// import org.springframework.data.annotation.PersistenceConstructor;
-import org.springframework.data.annotation.PersistenceCreator;
+import org.springframework.data.annotation.PersistenceConstructor;
+
 
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +22,7 @@ public class User {
   return new User(null, first_name, last_name, email, password);
  }
 
- @PersistenceCreator
+@PersistenceConstructor
  private User(Long id, String first_name, String last_name, String email, String password){
         this.id         = id;
         this.first_name = first_name;

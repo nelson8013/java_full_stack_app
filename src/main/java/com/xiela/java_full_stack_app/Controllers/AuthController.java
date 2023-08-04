@@ -1,58 +1,67 @@
 package com.xiela.java_full_stack_app.Controllers;
 
+import com.xiela.java_full_stack_app.Model.User;
 import com.xiela.java_full_stack_app.Services.AuthService;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
+import com.xiela.java_full_stack_app.Services.Login;
+
+import java.util.Objects;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api")
 public class AuthController {
- private final AuthService authService;
 
- public AuthController(AuthService authService){
-  this.authService = authService;
- }
-
- /*
- * The record feature is the DTO that carries data across all layers of the app
- * */
- record RegisterRequest(String first_name, String last_name,String email,String password,@JsonProperty("password_confirm") String passwordConfirm){}
- record RegisterResponse(Long id, String first_name, String last_name,String email){}
-
- @PostMapping("/register")
- public RegisterResponse register(@RequestBody RegisterRequest registerRequest) {
-
-    var user = authService.register(
-            registerRequest.first_name(),
-            registerRequest.last_name(),
-            registerRequest.email(),
-            registerRequest.password(),
-            registerRequest.passwordConfirm()
-    );
-    return new RegisterResponse(user.getId(), user.getFirst_name(), user.getLast_name(), user.getEmail());
- }
-
- record SignInRequest(String email,String password){}
- record SignInResponse(String token){}
-
- @PostMapping("/login")
- public SignInResponse login(@RequestBody SignInRequest signInRequest, HttpServletResponse response){
-      var login =   authService.login( signInRequest.email(), signInRequest.password());
-
-     Cookie cookie = new Cookie("refresh_token", login.getRefreshToken().getToken());
-     cookie.setMaxAge(3600);
-     cookie.setHttpOnly(true);
-     cookie.setPath("/api");
-
-     response.addCookie(cookie);
-      return new SignInResponse(login.getAccessToken().getToken());
- }
+    private final AuthService authService;
 
 
+    public  AuthController(AuthService authService){
+        this.authService =  authService;
+    }
 
 
+    record RegisterRequest(String first_name, String last_name, String email, String password, String password_confirm){}
+    record RegisterResponse(Long id, String first_name, String last_name, String email ){}
+
+    @PostMapping("/register")
+    public RegisterResponse register(@RequestBody RegisterRequest registerRequest) {
+
+        if(!Objects.equals(registerRequest.password(), registerRequest.password_confirm())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Passwords do not match");
+        }
+
+        User user = authService.register(
+                  registerRequest.first_name(),
+                  registerRequest.last_name(),
+                  registerRequest.email(), 
+                  registerRequest.password(),
+                  registerRequest.password_confirm());
+
+        return new RegisterResponse (user.getId(), user.getFirst_name(),user.getLast_name(),user.getEmail());
+    }
+
+
+    record LoginRequest(String email, String password){}
+    record LoginResponse(String token){}
+
+    @PostMapping("/login")
+    public LoginResponse login(@RequestBody LoginRequest loginRequest, HttpServletResponse response){
+        Login login =  authService.login(loginRequest.email(), loginRequest.password());
+        
+        Cookie cookie = new Cookie("refresh_token", login.getRefreshToken().getToken());
+        cookie.setMaxAge(3600);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/api");
+
+        response.addCookie(cookie);
+
+        return new LoginResponse(login.getAccessToken().getToken());
+    }
 
 
 }

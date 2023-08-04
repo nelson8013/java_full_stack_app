@@ -10,7 +10,6 @@ public class JavaFullStackAppApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(JavaFullStackAppApplication.class, args);
-		//e8dd8936-fa1f-4edc-b42b-1f8f1cab8265 
 	}
 
 }

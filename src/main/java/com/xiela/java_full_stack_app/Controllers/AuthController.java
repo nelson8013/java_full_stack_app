@@ -7,6 +7,7 @@ import com.xiela.java_full_stack_app.Services.Login;
 import java.util.Objects;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.HttpStatus;
@@ -63,5 +64,13 @@ public class AuthController {
         return new LoginResponse(login.getAccessToken().getToken());
     }
 
+    record UserResponse(Long id, String first_name, String last_name, String email){}
+
+    @GetMapping(value = "/user")
+    public UserResponse user(HttpServletRequest request){
+        var user = (User) request.getAttribute("user");
+
+        return new UserResponse(user.getId(), user.getFirst_name(), user.getLast_name(), user.getEmail());
+    }
 
 }

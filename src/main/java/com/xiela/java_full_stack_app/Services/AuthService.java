@@ -14,7 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Objects;
-@Slf4j
+
+
 @Service
 public class AuthService {
 
@@ -26,7 +27,7 @@ public class AuthService {
     public AuthService(
             UserRepository userRepository,
             PasswordEncoder passwordEncoder,
-            @Value("${application.security.access-token-secret}") String accessTokenSecret,
+            @Value("${application.security.access-token-secret}")  String accessTokenSecret,
             @Value("${application.security.refresh-token-secret}") String refreshTokenSecret){
         this.userRepository     = userRepository;
         this.passwordEncoder    = passwordEncoder;

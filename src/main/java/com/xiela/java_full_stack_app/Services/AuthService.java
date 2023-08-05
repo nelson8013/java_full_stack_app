@@ -5,7 +5,7 @@ import com.xiela.java_full_stack_app.Errors.UserNotFoundError;
 import com.xiela.java_full_stack_app.Model.User;
 import com.xiela.java_full_stack_app.Repositories.UserRepository;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.var;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -66,5 +66,10 @@ public class AuthService {
     public User getUserFromToken(String token) {
         return userRepository.findById(Token.from(token, accessTokenSecret))
                 .orElseThrow( UserNotFoundError::new);
+    }
+
+    public Login refreshAccess(String refreshToken) {
+      var userId = Token.from(refreshToken, refreshTokenSecret);
+      return  Login.of(userId, accessTokenSecret, Token.of(refreshToken));
     }
 }
